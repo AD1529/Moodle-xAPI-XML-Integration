@@ -25,7 +25,7 @@ class MoodleArchive:
         self.course = self.get_course()
         self.sections = self.get_sections()
         self.activities = self.get_activities()
-        self.questionBank = self.get_question_bank()
+        #self.questionBank = self.get_question_bank()
         self.section_list = self.add_section_correspondence()
         self.add_subsections()
         # self.files = self.get_files()
@@ -79,8 +79,7 @@ class MoodleArchive:
         return activities
 
     def get_question_bank(self):
-        question_bank = QuestionBank(self.archive_dir)
-        return question_bank
+        pass
 
     def get_files(self):
         pass

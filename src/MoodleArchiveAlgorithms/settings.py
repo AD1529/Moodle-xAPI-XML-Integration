@@ -1,7 +1,7 @@
 import os
 import ipywidgets.widgets as widgets
 from lxml import etree
-from src.Archives.availability import Availability
+from src.MoodleArchiveAlgorithms.availability import Availability
 from datetime import datetime
 
 

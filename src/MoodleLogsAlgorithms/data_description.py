@@ -1,6 +1,6 @@
 from pandas import DataFrame
-import src.DataConsolidation.preprocessing as pp
-import src.DataConsolidation.function_utils as fu
+import src.MoodleLogsAlgorithms.data_preprocessing as pp
+import src.MoodleLogsAlgorithms.function_utils as fu
 import pandas as pd
 import numpy as np
 

@@ -1,8 +1,8 @@
 import os
 import re
 import tarfile
-from src.Archives.moodle_object import MoodleCourse, MoodleSection, MoodleActivity
-from src.Archives.question_bank import QuestionBank
+from src.MoodleArchiveAlgorithms.moodle_object import MoodleCourse, MoodleSection, MoodleActivity
+from src.MoodleArchiveAlgorithms.question_bank import QuestionBank
 
 
 class MoodleArchive:
@@ -25,7 +25,7 @@ class MoodleArchive:
         self.course = self.get_course()
         self.sections = self.get_sections()
         self.activities = self.get_activities()
-        #self.questionBank = self.get_question_bank()
+        self.questionBank = self.get_question_bank()
         self.section_list = self.add_section_correspondence()
         self.add_subsections()
         # self.files = self.get_files()
@@ -79,7 +79,8 @@ class MoodleArchive:
         return activities
 
     def get_question_bank(self):
-        pass
+        question_bank = QuestionBank(self.archive_dir)
+        return question_bank
 
     def get_files(self):
         pass

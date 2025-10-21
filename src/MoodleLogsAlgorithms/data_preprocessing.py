@@ -1,10 +1,10 @@
-import src.DataConsolidation.function_utils as fu
+import src.MoodleLogsAlgorithms.function_utils as fu
 from pandas import DataFrame
 import numpy as np
 import pandas as pd
 
 
-def preprocess_json_files(course: int, path_json, path_pickle):
+def read_json_file(course: int, path_json, path_pickle):
     """
     Normalise and convert json files and save them as pickle files.
 
@@ -77,6 +77,7 @@ def filter_and_rename_columns(df: DataFrame) -> DataFrame:
 
 
 def merge_duplicates_missing_values(df: DataFrame) -> DataFrame:
+    # TODO remove on Github
     """
 
     Parameters
@@ -161,6 +162,7 @@ def extract_ids(df: DataFrame) -> DataFrame:
     # fix deleted activities
     deleted_activities = ((df.Object_id == 'https://moodle-sciences-23.sorbonne-universite.fr/mod/')
                           | (df.ObjectID == 'https://moodle-sciences-23.sorbonne-universite.fr/mod/'))
+    # | (df.Description == 'deleted'))  # TODO change?
     df.loc[deleted_activities, 'ObjectID'] = np.nan
 
     # extract ObjectID from ObjectID
@@ -984,71 +986,3 @@ def remove_fake_students(role_table: DataFrame, students_to_remove: list) -> Dat
         role_table.loc[role_table.User == student, 'Student'] = 0
 
     return role_table
-
-
-def course_name_retrieval(df: DataFrame, course: int) -> DataFrame:
-    if course == 1:  
-        course_name = 'B'
-    elif course == 2:
-        course_name = 'C'
-    elif course == 3:
-        course_name = 'D'
-    elif course == 4:
-        course_name = 'E'
-    elif course == 5:
-        course_name = 'F'
-    elif course == 6:
-        course_name = 'G'
-    elif course == 7:
-        course_name = 'H'
-    elif course == 8:
-        course_name = 'I'
-    elif course == 9:
-        course_name = 'J'
-    else:
-        course_id = f'id={course}'
-        course_name = df.loc[(df['Object_id'].str.contains('course/view.php')) &
-                             (df['Object_id'].str.contains(course_id))].head(1).Context.values[0]
-
-    return course_name
-
-
-def filter_semester_data(df: DataFrame, course: int) -> DataFrame:
-    """
-    Remove values that are inconsistent with the start and end dates.
-
-    Returns:
-        The dataframe purged of records previously or lately recorded in relation to course dates.
-    """
-
-    course_name = course_name_retrieval(df, course)
-
-    if 'S1' in course_name:
-        start_date = '2023-09-01T00:00:01+01:00'
-        end_date = '2024-01-13T23:59:59+01:00'
-    else:
-        start_date = '2024-01-15T00:00:00+01:00'
-        end_date = '2024-05-27T23:59:59+02:00'
-
-    df = df.loc[((df['Timestamp'] > start_date) & (df['Timestamp'] < end_date))]
-    # reverse the order based on the index
-    # df = df.iloc[::-1]
-    df = df.reset_index(drop=True)
-
-    return df
-
-
-def add_activity_status(df: DataFrame) -> DataFrame:
-    """
-    Identify actions performed on deleted modules or deleted users
-
-    Returns:
-         two values: DELETED or Available.
-    """
-
-    df.loc[(df.Description.str.contains('deleted')), 'Status'] = 'DELETED'
-    # df.loc[(df.Status == 'DELETED') & (df.Path.str.contains('attempt')), 'Status'] = 'Available'
-
-    df.loc[df['Status'].isnull(), 'Status'] = 'Available'
-
-    return df

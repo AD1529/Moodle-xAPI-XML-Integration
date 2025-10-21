@@ -1,4 +1,4 @@
 __version__ = '0.1'
-__author__ = 'anonym'
+__author__ = 'Daniela Rotelli'
 
-__all__ = ["DataConsolidation", "Datasets"]
+__all__ = ["MoodleArchiveAlgorithms", "MoodleLogsAlgorithms", "Datasets", "Notebooks"]

@@ -1,6 +1,6 @@
 import os
-from src.Archives.settings import CourseSettings, SectionSettings, ActivitySettings
-from src.Archives.content import CourseContent, SectionContent, ActivityContent
+from src.MoodleArchiveAlgorithms.settings import CourseSettings, SectionSettings, ActivitySettings
+from src.MoodleArchiveAlgorithms.content import CourseContent, SectionContent, ActivityContent
 
 
 class MoodleObject:

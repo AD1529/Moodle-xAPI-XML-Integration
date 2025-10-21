@@ -78,3 +78,31 @@ def explode_list(items: list) -> list:
     ids.extend([np.nan] * (5 - len(ids)))
 
     return ids
+
+
+def patch(df, prior_statements_path):
+    # TODO remove on Github
+    prior_statements = pd.read_pickle(prior_statements_path)
+    list_actors_prior_statements = prior_statements['actor.name'].unique()
+    list_actors_df = df['actor.name'].unique()
+    df_begin_time = df.iloc[0].timestamp
+    for actor in list_actors_df:
+        if actor in list_actors_prior_statements:
+            logs_to_add = prior_statements.loc[
+                (prior_statements['actor.name'] == actor) & (prior_statements['timestamp'] <= df_begin_time)]
+            df = pd.concat([logs_to_add, df], axis=0)
+
+    df_patched = df.copy()  # to have a defragmented df for small courses
+    df_patched['index'] = df_patched.index
+    df_patched = df_patched.sort_values(by=['timestamp', 'index'])
+    df_patched = df_patched.reset_index(drop=True)
+
+    return df_patched
+
+
+def patch_modified_names(df: DataFrame) -> DataFrame:
+    # TODO remove on Github
+    df.loc[df.User == '0e143436d3cb0c5e16d74253b9ef019f23c73e6e9bbba4aabbb593e594dde922', 'User'] = \
+        '98a0d3aee96ce2202a1abde88b632040098c27c0ad17711841f2c4baefe125c0'
+
+    return df

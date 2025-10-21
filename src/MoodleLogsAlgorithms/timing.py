@@ -67,7 +67,8 @@ def semester_retrieval(course_id: int) -> int:
 
     """
     semester = 1
-    second_semester = [1, 4, 7, 9, 10, 11, 12]
+    # first_semester = [125, 153, 313, 1539, 1587, 2961, 3135]
+    second_semester = [141, 1527, 2781, 3499, 3559, 3789, 3791]
 
     if course_id in second_semester:
         semester = 2

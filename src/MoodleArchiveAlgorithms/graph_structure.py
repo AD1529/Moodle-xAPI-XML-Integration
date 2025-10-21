@@ -1,4 +1,4 @@
-from src.Archives.moodle_archive import MoodleArchive
+from src.MoodleArchiveAlgorithms.moodle_archive import MoodleArchive
 
 import networkx as nx
 from networkx import DiGraph
@@ -8,6 +8,7 @@ from matplotlib.lines import Line2D
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+from pandas import DataFrame
 
 
 def course_chaptering(archive: MoodleArchive):
@@ -133,6 +134,54 @@ def add_activities(course: DiGraph, archive: MoodleArchive, node: str) -> DiGrap
 
 def add_interactions(course: DiGraph, archive: MoodleArchive, level):
     pass
+
+
+def integrate_course_structure(df: DataFrame, course_structure: DiGraph, archive: MoodleArchive) -> DataFrame:
+    # select the components to check
+    excluded_components = ['Role', 'Groups', 'Grades', 'User profile', 'Enrolment', 'Attendance']
+
+    components = list(set(df.Component.unique()) - set(excluded_components))
+
+    # filter selected components, available activities, and students.
+    df = df.loc[(df.Component.isin(components))].copy()
+
+    for node in course_structure.nodes:
+        settings = course_structure.nodes[node]['settings']
+        component = node.split('_')[0].capitalize()
+        if component == 'Assign':
+            component = 'Assignment'
+        if component == 'Lti':
+            component = 'External tool'
+        if component == 'Resource':
+            component = 'File'
+        if component == 'Url':
+            component = 'URL'
+        if component == 'Scorm':
+            component = 'SCORM package'
+        if component == 'Data':
+            component = 'Database'
+        if component == 'Choicegroup':
+            component = 'Group choice'
+        if component in components and node != 'course':
+            object_id = int(node.split('_')[1])
+            condition = (df.Component == component) & (df.ObjectID == object_id)
+            df.loc[
+                condition, 'Context'] = settings.name  # TODO: remove in the final code, but here is needed to fix hashing "context" errors.
+            df.loc[condition, 'Visibility'] = settings.visible
+            df.loc[condition, 'Availability'] = settings.availability
+            df.loc[condition, 'Section_number'] = settings.sectionnumber
+
+    df.loc[(df.Component == 'Course'), 'Visibility'] = True
+    df.loc[(df.Component == 'Course'), 'Section_number'] = -1
+
+    for section in archive.section_list:
+        number = section.settings.number
+        name = section.settings.name
+        df.loc[df.Section_number == number, 'Section_name'] = name
+
+    df.loc[df.Section_number == -1, 'Section_name'] = 'Home page'
+
+    return df
 
 
 def plot_graph(course_structure: DiGraph, figsize: tuple, textlen: int = 35):
